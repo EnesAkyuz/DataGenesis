@@ -151,9 +151,49 @@ def generate_csv_names():
     except Exception as e:
         return str(e), 400
 
+@app.route('/generate_csv_uniform_minmax', methods=['GET'])
+def generate_csv_uniform_minmax():
+    try:
+        minimum = float(request.args.get('min', 0))
+        maximum = float(request.args.get('max', 1))
+        num_samples = int(request.args.get('num_samples', 100))
+
+        if minimum >= maximum:
+            return "Error: 'min' must be less than 'max'", 400
+
+        # Generate uniform distribution data
+        data = np.random.uniform(low=minimum, high=maximum, size=num_samples)
+
+        # Humanize the data
+        data = humanize_data(data)
+
+        # Create a DataFrame
+        df = pd.DataFrame({'value': data})
+
+        # Convert DataFrame to CSV
+        output = io.StringIO()
+        df.to_csv(output, index=False)
+        output.seek(0)
+
+        # Create the response
+        response = make_response(output.getvalue())
+        response.headers['Content-Disposition'] = 'attachment; filename=generated_data_uniform_minmax.csv'
+        response.headers['Content-Type'] = 'text/csv'
+
+        return response
+    except Exception as e:
+        return str(e), 400
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+
+
 
 
 # TESTING:  curl -o generated_data_normal_std.csv "http://127.0.0.1:5000/generate_csv_normal_std?mean=10&std=5&num_samples=1000"
@@ -161,3 +201,4 @@ if __name__ == '__main__':
 
 # change out params for gender, samples, first_name, surname
 # TESTING: curl -o generated_data_names.csv "http://127.0.0.1:5000/generate_csv_names?gender=male&num_samples=20&first_name=True&surname=True"
+
