@@ -186,8 +186,6 @@ def generate_csv_uniform_minmax():
 
 
 
-
-
 if __name__ == '__main__':
     app.run(debug=True)
 
