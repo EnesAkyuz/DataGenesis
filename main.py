@@ -24,6 +24,18 @@ def humanize_data(data):
 
 @app.route('/generate_csv_normal_std', methods=['GET'])
 def generate_csv_normal_std():
+    """
+    This function generates a CSV file containing random data from a normal distribution.
+
+    Parameters:
+    mean (float): The mean of the normal distribution. Default is 0.
+    std (float): The standard deviation of the normal distribution. Default is 1.
+    num_samples (int): The number of samples to generate. Default is 100.
+
+    Returns:
+    flask.Response: A CSV file containing the generated data, with a filename of 'generated_data_normal_std.csv'.
+    If an error occurs, returns a string describing the error and a 400 status code.
+    """
     try:
         mean = float(request.args.get('mean', 0))
         std = float(request.args.get('std', 1))
@@ -451,9 +463,6 @@ def generate_csv_normal_discrete_minmax():
     except Exception as e:
         return str(e), 400
 
-
-    
-    
 
 
 
