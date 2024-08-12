@@ -356,6 +356,102 @@ def generate_csv_uniform_discrete():
     except Exception as e:
         return str(e), 400
     
+@app.route('/generate_csv_normal_discrete_std', methods=['GET'])
+def generate_csv_normal_discrete_std():
+    """
+    This function generates a CSV file containing random data from a normal discrete distribution.
+
+    Parameters:
+    mean (float): The mean of the normal distribution. Default is 0.
+    std (float): The standard deviation of the normal distribution. Default is 1.
+    num_samples (int): The number of samples to generate. Default is 100.
+
+    Returns:
+    flask.Response: A CSV file containing the generated data, with a filename of 'generated_data_normal_discrete_std.csv'.
+    If an error occurs, returns a string describing the error and a 400 status code.
+    """
+    try:
+        mean = float(request.args.get('mean', 0))
+        std = float(request.args.get('std', 1))
+        num_samples = int(request.args.get('num_samples', 100))
+
+        # Generate normal distribution data
+        data = np.random.normal(mean, std, num_samples)
+
+        # Round to the nearest integer to get discrete values
+        data = np.round(data).astype(int)
+
+        # Create a DataFrame
+        df = pd.DataFrame({'value': data})
+
+        # Convert DataFrame to CSV
+        output = io.StringIO()
+        df.to_csv(output, index=False)
+        output.seek(0)
+
+        # Create the response
+        response = make_response(output.getvalue())
+        response.headers['Content-Disposition'] = 'attachment; filename=generated_data_normal_discrete_std.csv'
+        response.headers['Content-Type'] = 'text/csv'
+
+        return response
+    except Exception as e:
+        return str(e), 400
+
+@app.route('/generate_csv_normal_discrete_minmax', methods=['GET'])
+def generate_csv_normal_discrete_minmax():
+    """
+    This function generates a CSV file containing random data from a normal discrete distribution.
+
+    Parameters:
+    mean (float): The mean of the normal distribution. Default is 0.
+    min (float): The minimum value for the generated data. Default is mean - 1.
+    max (float): The maximum value for the generated data. Default is mean + 1.
+    num_samples (int): The number of samples to generate. Default is 100.
+
+    Returns:
+    flask.Response: A CSV file containing the generated data, with a filename of 'generated_data_normal_discrete_minmax.csv'.
+    If an error occurs, returns a string describing the error and a 400 status code.
+    """
+    try:
+        mean = float(request.args.get('mean', 0))
+        minimum = float(request.args.get('min', mean - 1))
+        maximum = float(request.args.get('max', mean + 1))
+        num_samples = int(request.args.get('num_samples', 100))
+
+        if minimum >= maximum:
+            return "Error: 'min' must be less than 'max'", 400
+
+        # Approximate standard deviation
+        std = (maximum - minimum) / 6
+
+        # Generate normal distribution data
+        data = np.random.normal(mean, std, num_samples)
+
+        # Truncate data to fit within the min and max range
+        data = np.clip(data, minimum, maximum)
+
+        # Round to the nearest integer to get discrete values
+        data = np.round(data).astype(int)
+
+        # Create a DataFrame
+        df = pd.DataFrame({'value': data})
+
+        # Convert DataFrame to CSV
+        output = io.StringIO()
+        df.to_csv(output, index=False)
+        output.seek(0)
+
+        # Create the response
+        response = make_response(output.getvalue())
+        response.headers['Content-Disposition'] = 'attachment; filename=generated_data_normal_discrete_minmax.csv'
+        response.headers['Content-Type'] = 'text/csv'
+
+        return response
+    except Exception as e:
+        return str(e), 400
+
+
     
     
 
